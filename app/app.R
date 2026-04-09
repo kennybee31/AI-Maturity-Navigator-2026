@@ -1,20 +1,19 @@
 # ==============================================================================
-# Script Name: app.R (The Final Executive Edition - Debugged)
-# Purpose: AI Maturity Navigator 2026 - Optimized for ShinyLive Deployment
+# Script Name: app.R (Final Debugged Edition)
+# Purpose: AI Maturity Navigator 2026 - Optimized for WebR Deployment
 # Logic: 大象無形 (Clean UI), 執大象 (Structured Governance)
 # ==============================================================================
 
-# 1. 核心套件載入 (確保 WebR 環境穩定) ------------------------------------------
 library(shiny)
 library(bslib)
 library(ggplot2)
 library(dplyr)
 library(bsicons)
-library(scales)   
-library(munsell)  
-library(markdown) 
+library(scales)
+library(munsell)
+library(markdown)
 
-# 2. 雙語字典與戰略說明 (Strict Bilingual per Source Material) -----------------
+# 1. 語言與說明包 (Strict Bilingual - No Citations)
 i18n <- list(
   en = list(
     title = "AI Maturity Navigator 2026",
@@ -22,17 +21,17 @@ i18n <- list(
     lang_label = "Language Selection",
     industry_label = "Industry Sector",
     maturity_label = "AI Maturity Score",
-    maturity_desc = "Measures internal process integration and governance[cite: 3].",
+    maturity_desc = "Composite index measuring internal process integration and governance.",
     roi_card = "Predicted ROI %",
-    roi_info = "Expected financial return based on the strategic audit[cite: 2].",
+    roi_info = "Expected financial return based on the strategic audit model.",
     archetype_card = "Digital Archetype",
-    archetype_info = "Strategic categorization of AI readiness[cite: 5].",
+    archetype_info = "Strategic categorization of organizational AI readiness.",
     frontier_title = "The Strategic Efficiency Frontier",
-    frontier_desc = "ROI gains accelerate in the Evolver phase but plateau at the Governance Ceiling[cite: 45].",
+    frontier_desc = "This curve reveals the law of diminishing returns. ROI gains accelerate in the Evolver phase but plateau at the Governance Ceiling.",
     expert_title = "Expert Mandate & Governance",
-    source = "Data: Fortune 500 AI Adoption Dataset (2020-2025)[cite: 2].",
-    model_desc = "Model: Quadratic Regression Analysis (R² ≈ 0.45)[cite: 48].",
-    legal = "Disclaimer: For strategic simulation only. Past performance is not indicative of future results[cite: 48].",
+    source = "Data Source: Fortune 500 AI Adoption Dataset via Kaggle (2020-2025).",
+    model_desc = "Model: Quadratic Regression Analysis (R² ≈ 0.45).",
+    legal = "Disclaimer: For strategic simulation only. Past performance is not indicative of future results.",
     tip_point = "Tipping Point"
   ),
   zh = list(
@@ -41,26 +40,26 @@ i18n <- list(
     lang_label = "語言選擇",
     industry_label = "選擇產業別",
     maturity_label = "AI 成熟度得分",
-    maturity_desc = "衡量企業內部流程整合與治理能力的綜合指標 [引用: 3]。",
+    maturity_desc = "衡量企業內部流程整合與治理能力的綜合指標。",
     roi_card = "預測投資回報率 (ROI %)",
-    roi_info = "基於戰略審計模型預測之財務回報率 [引用: 2]。",
+    roi_info = "基於戰略審計模型預測之財務回報率。",
     archetype_card = "數位階級標籤",
-    archetype_info = "根據數位準備度進行的戰略分類 [引用: 5]。",
+    archetype_info = "根據數位準備度進行的戰略分類。",
     frontier_title = "戰略效率邊界曲線",
-    frontier_desc = "揭示邊際收益遞減規律。回報在進化者階段加速，但在觸及治理天花板後趨於平緩 [引用: 43, 45]。",
+    frontier_desc = "此曲線揭示了邊際收益遞減規律。回報在進化者階段加速，但在觸及治理天花板後趨於平緩。",
     expert_title = "專家指令與治理建議",
-    source = "數據來源：Fortune 500 強企業 AI 導入數據集 (2020-2025) [引用: 2]。",
-    model_desc = "統計模型：二次項回歸分析 (解釋力 R² ≈ 0.45) [引用: 48]。",
-    legal = "合規聲明：本工具僅供戰略模擬參考，不代表實際獲利保證 [引用: 48]。",
+    source = "數據來源：Kaggle 平台之 Fortune 500 強企業 AI 數據集 (2020-2025)。",
+    model_desc = "統計模型：二次項回歸分析 (解釋力 R² ≈ 0.45)。",
+    legal = "合規聲明：本工具僅供戰略模擬參考，不代表實際獲利保證。",
     tip_point = "技術引爆點"
   )
 )
 
-# 3. UI 介面設計 (移除 font_google 以修復 WebR libcurl 錯誤) -------------------
+# 2. UI 介面設計 (修正字體錯誤)
 ui <- page_sidebar(
   theme = bs_theme(
     bg = "#0F172A", fg = "#F8FAFC", primary = "#FACC15",
-    base_font = "sans-serif" # 修正：改用內建字體以確保 ShinyLive 相容性
+    base_font = "sans-serif" # 重要修正：移除 font_google 以修復 WebR libcurl 錯誤
   ),
   title = textOutput("app_title"),
   
@@ -69,7 +68,6 @@ ui <- page_sidebar(
     radioButtons("lang", "Language / 語言", choices = c("English" = "en", "中文" = "zh"), selected = "zh"),
     selectInput("industry", "Industry", choices = c("Technology", "E-commerce", "Finance", "Telecom", "Healthcare", "Manufacturing")),
     
-    # 級距為 5
     sliderInput("maturity", "Maturity Score", min = 0, max = 100, value = 60, step = 5),
     span(textOutput("maturity_explanation"), style = "font-size: 0.85rem; color: #CBD5E1;"),
     
@@ -83,7 +81,6 @@ ui <- page_sidebar(
   
   layout_column_wrap(
     width = 1/2,
-    # 數值指標卡 (維持 3.5rem 大字體比例)
     value_box(
       title = tooltip(textOutput("card_roi_title"), textOutput("card_roi_info")),
       value = tags$span(style = "font-size: 3.5rem; font-weight: 800;", textOutput("roi_val")),
@@ -104,17 +101,16 @@ ui <- page_sidebar(
       card_footer(textOutput("frontier_explanation"), style = "font-size: 0.95rem; color: #CBD5E1; border-top: 1px solid #334155;")
     ),
     
-    # 戰略建議區 (垂直條列式)
     card(
       card_header(textOutput("expert_head")),
       card_body(
-        uiOutput("dynamic_advice")
+        markdown(uiOutput("dynamic_advice"))
       )
     )
   )
 )
 
-# 4. Server 邏輯 ---------------------------------------------------------------
+# 3. Server 邏輯
 server <- function(input, output) {
   
   L <- reactive({ i18n[[input$lang]] })
@@ -135,7 +131,6 @@ server <- function(input, output) {
   
   res <- reactive({
     m <- input$maturity
-    # 二次項預測模型 [cite: 46]
     val <- 20.3 + (0.5 * m) - (0.003 * m^2)
     status <- case_when(
       m >= 80 ~ ifelse(input$lang == "en", "Leader (Strategic Lion)", "領先獅子 (Leader)"),
@@ -167,31 +162,29 @@ server <- function(input, output) {
       )
   })
   
-  # 戰略指令：確保垂直排列並移除引用的 UI 展示代碼
   output$dynamic_advice <- renderUI({
     m <- input$maturity
     text_out <- if(m < 45) {
       if(input$lang == "en") {
-        "1. Decouple transformation success from raw compute spending[cite: 52].  \n2. Prioritize process integration over blind scaling[cite: 51].  \n3. Focus on high-quality data hygiene as a foundational pillar[cite: 3].  \n4. Establish clear baseline metrics for digital governance[cite: 54].  \n5. Audit data siloes to prepare for future structural fluidity."
+        "1. Decouple transformation success from raw compute spending.  \n2. Prioritize process integration over blind scaling.  \n3. Focus on high-quality data hygiene as a foundational pillar.  \n4. Establish clear baseline metrics for digital governance.  \n5. Audit data siloes to prepare for future structural fluidity."
       } else {
-        "1. 將轉型成功與純粹的算力支出脫鉤 [引用: 52]。  \n2. 優先強化流程整合，而非盲目擴張規模 [引用: 51]。  \n3. 專注於高品質的數據清洗，建立穩固基礎 [引用: 3]。  \n4. 為數位治理建立清晰的基準指標 [引用: 54]。  \n5. 審計數據孤島，為未來的靈活架構做準備。"
+        "1. 將轉型成功與純粹的算力支出脫鉤。  \n2. 優先強化流程整合，而非盲目擴張規模。  \n3. 專注於高品質的數據清洗，建立穩固基礎。  \n4. 為數位治理建立清晰的基準指標。  \n5. 審計數據孤島，為未來的靈活架構做準備。"
       }
     } else if (m >= 45 && m < 80) {
       if(input$lang == "en") {
-        "1. Navigate the 'Volatility Zone' by anticipating erratic ROI[cite: 7, 8].  \n2. Leverage cross-sector data to break internal silos[cite: 27].  \n3. Deploy adaptable technical stacks for higher agility[cite: 57].  \n4. Accelerate AI integration to cross the 80-point threshold.  \n5. Monitor decision noise closely during this growth phase[cite: 48]."
+        "1. Navigate the 'Volatility Zone' by anticipating erratic ROI.  \n2. Leverage cross-sector data to break internal silos.  \n3. Deploy adaptable technical stacks for higher agility.  \n4. Accelerate AI integration to cross the 80-point threshold.  \n5. Monitor decision noise closely during this growth phase."
       } else {
-        "1. 穿越「高雜訊波動區」，預判並應對不穩定的 ROI [引用: 7, 8]。  \n2. 利用跨部門數據打破孤島，提升運作效率 [引用: 27]。  \n3. 部署具備高度適應性的技術棧以增加靈活性 [引用: 57]。  \n4. 加速 AI 流程整合，全力突破 80 分領先者門檻。  \n5. 在成長階段嚴密監控決策雜訊對回報的影響 [引用: 48]。"
+        "1. 穿越「高雜訊波動區」，預判並應對不穩定的 ROI。  \n2. 利用跨部門數據打破孤島，提升運作效率。  \n3. 部署具備高度適應性的技術棧以增加靈活性。  \n4. 加速 AI 流程整合，全力突破 80 分領跑者門檻。  \n5. 在成長階段嚴密監控決策雜訊對回報的影響。"
       }
     } else {
       if(input$lang == "en") {
-        "1. Maintain the 'Leader's Moat' through consistent governance[cite: 23].  \n2. Identify the 'Governance Ceiling' where ROI begins to plateau[cite: 45].  \n3. Strictly align with ISO 42001 frameworks for maximum stability[cite: 48].  \n4. Shift focus from technical competition to operational accountability[cite: 50].  \n5. Prioritize algorithm transparency to mitigate long-term debt."
+        "1. Maintain the 'Leader's Moat' through consistent governance.  \n2. Identify the 'Governance Ceiling' where ROI begins to plateau.  \n3. Strictly align with ISO 42001 frameworks for maximum stability.  \n4. Shift focus from technical competition to operational accountability.  \n5. Prioritize algorithm transparency to mitigate long-term debt."
       } else {
-        "1. 透過持續的治理鞏固「領先者護城河」 [引用: 23]。  \n2. 識別「治理天花板」，預判回報趨緩的臨界點 [引用: 45]。  \n3. 嚴格對齊 ISO 42001 框架以確保極致穩定性 [引用: 48]。  \n4. 將焦點從技術競爭轉向運營問責制 [引用: 50]。  \n5. 優先提升算法透明度，降低長期技術債風險。"
+        "1. 透過持續的治理鞏固「領先者護城河」。  \n2. 識別「治理天花板」，預判回報趨緩的臨界點。  \n3. 嚴格對齊 ISO 42001 框架以確保極致穩定性。  \n4. 將焦點從技術競爭轉向運營問責制。  \n5. 優先提升算法透明度，降低長期技術債風險。"
       }
     }
     markdown(text_out)
   })
 }
 
-# 5. 啟動應用程式 --------------------------------------------------------------
 shinyApp(ui, server)
