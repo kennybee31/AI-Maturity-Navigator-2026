@@ -1,9 +1,10 @@
 # ==============================================================================
-# Script Name: app.R (Final Debugged Edition)
-# Purpose: AI Maturity Navigator 2026 - Optimized for WebR Deployment
+# Script Name: app.R (The Final Executive Edition)
+# Purpose: AI Maturity Navigator 2026 - WebR/ShinyLive Optimized
 # Logic: 大象無形 (Clean UI), 執大象 (Structured Governance)
 # ==============================================================================
 
+# 1. 核心套件載入 --------------------------------------------------------------
 library(shiny)
 library(bslib)
 library(ggplot2)
@@ -13,7 +14,7 @@ library(scales)
 library(munsell)
 library(markdown)
 
-# 1. 語言與說明包 (Strict Bilingual - No Citations)
+# 2. 雙語字典 (Strict Bilingual - No Citations) --------------------------------
 i18n <- list(
   en = list(
     title = "AI Maturity Navigator 2026",
@@ -55,11 +56,11 @@ i18n <- list(
   )
 )
 
-# 2. UI 介面設計 (修正字體錯誤)
+# 3. UI 介面設計 (使用內建字體防 WebR 崩潰) -------------------------------------
 ui <- page_sidebar(
   theme = bs_theme(
     bg = "#0F172A", fg = "#F8FAFC", primary = "#FACC15",
-    base_font = "sans-serif" # 重要修正：移除 font_google 以修復 WebR libcurl 錯誤
+    base_font = "sans-serif" # 確保 WebAssembly 環境順利執行
   ),
   title = textOutput("app_title"),
   
@@ -68,6 +69,7 @@ ui <- page_sidebar(
     radioButtons("lang", "Language / 語言", choices = c("English" = "en", "中文" = "zh"), selected = "zh"),
     selectInput("industry", "Industry", choices = c("Technology", "E-commerce", "Finance", "Telecom", "Healthcare", "Manufacturing")),
     
+    # 級距維持 5
     sliderInput("maturity", "Maturity Score", min = 0, max = 100, value = 60, step = 5),
     span(textOutput("maturity_explanation"), style = "font-size: 0.85rem; color: #CBD5E1;"),
     
@@ -81,6 +83,7 @@ ui <- page_sidebar(
   
   layout_column_wrap(
     width = 1/2,
+    # 數值指標卡 (維持 3.5rem 大字體)
     value_box(
       title = tooltip(textOutput("card_roi_title"), textOutput("card_roi_info")),
       value = tags$span(style = "font-size: 3.5rem; font-weight: 800;", textOutput("roi_val")),
@@ -94,6 +97,7 @@ ui <- page_sidebar(
       theme = "secondary"
     ),
     
+    # 圖表區
     card(
       full_screen = TRUE,
       card_header(textOutput("frontier_head")),
@@ -101,16 +105,17 @@ ui <- page_sidebar(
       card_footer(textOutput("frontier_explanation"), style = "font-size: 0.95rem; color: #CBD5E1; border-top: 1px solid #334155;")
     ),
     
+    # 專家建議區 (動態 Markdown 渲染)
     card(
       card_header(textOutput("expert_head")),
       card_body(
-        markdown(uiOutput("dynamic_advice"))
+        uiOutput("dynamic_advice")
       )
     )
   )
 )
 
-# 3. Server 邏輯
+# 4. Server 邏輯 ---------------------------------------------------------------
 server <- function(input, output) {
   
   L <- reactive({ i18n[[input$lang]] })
@@ -162,29 +167,31 @@ server <- function(input, output) {
       )
   })
   
+  # 動態戰略建議 (完美生成 1-5 點的垂直清單)
   output$dynamic_advice <- renderUI({
     m <- input$maturity
     text_out <- if(m < 45) {
       if(input$lang == "en") {
-        "1. Decouple transformation success from raw compute spending.  \n2. Prioritize process integration over blind scaling.  \n3. Focus on high-quality data hygiene as a foundational pillar.  \n4. Establish clear baseline metrics for digital governance.  \n5. Audit data siloes to prepare for future structural fluidity."
+        "1. Decouple transformation success from raw compute spending.\n2. Prioritize process integration over blind scaling.\n3. Focus on high-quality data hygiene as a foundational pillar.\n4. Establish clear baseline metrics for digital governance.\n5. Audit data siloes to prepare for future structural fluidity."
       } else {
-        "1. 將轉型成功與純粹的算力支出脫鉤。  \n2. 優先強化流程整合，而非盲目擴張規模。  \n3. 專注於高品質的數據清洗，建立穩固基礎。  \n4. 為數位治理建立清晰的基準指標。  \n5. 審計數據孤島，為未來的靈活架構做準備。"
+        "1. 將轉型成功與純粹的算力支出脫鉤。\n2. 優先強化流程整合，而非盲目擴張規模。\n3. 專注於高品質的數據清洗，建立穩固基礎。\n4. 為數位治理建立清晰的基準指標。\n5. 審計數據孤島，為未來的靈活架構做準備。"
       }
     } else if (m >= 45 && m < 80) {
       if(input$lang == "en") {
-        "1. Navigate the 'Volatility Zone' by anticipating erratic ROI.  \n2. Leverage cross-sector data to break internal silos.  \n3. Deploy adaptable technical stacks for higher agility.  \n4. Accelerate AI integration to cross the 80-point threshold.  \n5. Monitor decision noise closely during this growth phase."
+        "1. Navigate the 'Volatility Zone' by anticipating erratic ROI.\n2. Leverage cross-sector data to break internal silos.\n3. Deploy adaptable technical stacks for higher agility.\n4. Accelerate AI integration to cross the 80-point threshold.\n5. Monitor decision noise closely during this growth phase."
       } else {
-        "1. 穿越「高雜訊波動區」，預判並應對不穩定的 ROI。  \n2. 利用跨部門數據打破孤島，提升運作效率。  \n3. 部署具備高度適應性的技術棧以增加靈活性。  \n4. 加速 AI 流程整合，全力突破 80 分領跑者門檻。  \n5. 在成長階段嚴密監控決策雜訊對回報的影響。"
+        "1. 穿越「高雜訊波動區」，預判並應對不穩定的 ROI。\n2. 利用跨部門數據打破孤島，提升運作效率。\n3. 部署具備高度適應性的技術棧以增加靈活性。\n4. 加速 AI 流程整合，全力突破 80 分領跑者門檻。\n5. 在成長階段嚴密監控決策雜訊對回報的影響。"
       }
     } else {
       if(input$lang == "en") {
-        "1. Maintain the 'Leader's Moat' through consistent governance.  \n2. Identify the 'Governance Ceiling' where ROI begins to plateau.  \n3. Strictly align with ISO 42001 frameworks for maximum stability.  \n4. Shift focus from technical competition to operational accountability.  \n5. Prioritize algorithm transparency to mitigate long-term debt."
+        "1. Maintain the 'Leader's Moat' through consistent governance.\n2. Identify the 'Governance Ceiling' where ROI begins to plateau.\n3. Strictly align with ISO 42001 frameworks for maximum stability.\n4. Shift focus from technical competition to operational accountability.\n5. Prioritize algorithm transparency to mitigate long-term debt."
       } else {
-        "1. 透過持續的治理鞏固「領先者護城河」。  \n2. 識別「治理天花板」，預判回報趨緩的臨界點。  \n3. 嚴格對齊 ISO 42001 框架以確保極致穩定性。  \n4. 將焦點從技術競爭轉向運營問責制。  \n5. 優先提升算法透明度，降低長期技術債風險。"
+        "1. 透過持續的治理鞏固「領先者護城河」。\n2. 識別「治理天花板」，預判回報趨緩的臨界點。\n3. 嚴格對齊 ISO 42001 框架以確保極致穩定性。\n4. 將焦點從技術競爭轉向運營問責制。\n5. 優先提升算法透明度，降低長期技術債風險。"
       }
     }
     markdown(text_out)
   })
 }
 
+# 5. 啟動應用程式 --------------------------------------------------------------
 shinyApp(ui, server)
